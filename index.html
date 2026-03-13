@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦫</text></svg>">
+	<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1">
+	<title>Gopherus Scheme Builder</title>
+	<style>
+      .color {display: inline-block;margin-right: 10px;margin-bottom: 5px;width: 50px;height: 20px;border-right: 1px solid #fff;border-left: 1px solid #fff;cursor: pointer;}
+    	body {background-color: black;color: #AAA;font-family: monospace;}
+    	lab {margin-left:10px;}
+    	input, button, textarea {background:transparent;border:1px gray solid;color:#eee;}
+    	button {color:#aaa;border:2px gray solid; padding:2px 5px;transition: background 2s ease}
+    	button:hover {background:#333;} pre {margin-top:5px}
+    	.row { display: grid; justify-content: center;gap: 10px;grid-auto-flow: column;}
+    </style>
+</head>
+<body onload="load();">
+    <div id="colorPalette" style="text-align: center;"></div>
+<div class="row">
+<div class="column">
+<input type="text" id="textInput" class="normal-background-color" placeholder="normal-background-color"></input>
+<input type="text" id="textInput" class="normal-foreground-color" placeholder="normal-foreground-color"></input><lab id="normal-coloroutput">Normal text (text files or 'i' items)</lab><br>
+<input type="text" id="textInput" class="statI-background-color" placeholder="statI-background-color"></input>
+<input type="text" id="textInput" class="statI-foreground-color" placeholder="statI-foreground-color"></input><lab id="statI-coloroutput">Status bar (information)</lab><br>
+<input type="text" id="textInput" class="statW-background-color" placeholder="statW-background-color"></input>
+<input type="text" id="textInput" class="statW-foreground-color" placeholder="statW-foreground-color"></input><lab id="statW-coloroutput">Status bar (warning)</lab><br>
+<input type="text" id="textInput" class="url-background-color" placeholder="url-background-color"></input>
+<input type="text" id="textInput" class="url-foreground-color" placeholder="url-foreground-color"></input><lab id="url-coloroutput">URL bar</lab><br>
+<input type="text" id="textInput" class="urlD-background-color" placeholder="urlD-background-color"></input>
+<input type="text" id="textInput" class="urlD-foreground-color" placeholder="urlD-foreground-color"></input><lab id="urlD-coloroutput">URL bar side decorations</lab><br>
+<input type="text" id="textInput" class="itemType-background-color" placeholder="itemType-background-color"></input>
+<input type="text" id="textInput" class="itemType-foreground-color" placeholder="itemType-foreground-color"></input><lab id="itemType-coloroutput">Itemtype column in menus</lab><br>
+<input type="text" id="textInput" class="error-background-color" placeholder="error-background-color"></input>
+<input type="text" id="textInput" class="error-foreground-color" placeholder="error-foreground-color"></input><lab id="error-coloroutput">Error item in menu</lab><br>
+<input type="text" id="textInput" class="selected-background-color" placeholder="selected-background-color"></input>
+<input type="text" id="textInput" class="selected-foreground-color" placeholder="selected-foreground-color"></input><lab id="selected-coloroutput">Selectable items in menu</lab><br>
+<input type="text" id="textInput" class="selectable-background-color" placeholder="selectable-background-color"></input>
+<input type="text" id="textInput" class="selectable-foreground-color" placeholder="selectable-foreground-color"></input><lab id="selectable-coloroutput">Selected item in menu</lab><br>
+
+<button onClick="submit()">Code</button>
+<pre id="codeOutput" style="user-select:all"></pre>
+</div>
+</div>
+<details style="text-align:center"><summary>Colors</summary>
+<textarea type="text" id="savedInput" oninput="getSavedInput()" style="width:40vw;height:100px;" placeholder="Paste scheme here, one hex code per line. EX:
+#000
+#00A
+#00A00">#000
+#0037DA
+#13A10E
+#3A96DD
+#C50F1F
+#881798
+#C19C00
+#ccc
+#767676
+#3B78FF
+#16C60C
+#61D6D6
+#E74856
+#B4009E
+#F9F1A5
+#fff</textarea></details>
+    <script>
+function load() {inputs=document.getElementsByTagName("input");for (i in inputs){inputs[i].value="";}colorBuild();}
+colorDict = [ ["0","#000","black"],["1","#0037DA","low blue"],["2","#13A10E","low green"],["3","#3A96DD","low cyan"],["4","#C50F1F","low red"],["5","#881798","low magenta"],["6","#C19C00","low brown"],["7","#ccc","light gray"],["8","#767676","dark gray"],["9","#3B78FF","high blue"],["A","#16C60C","high green"],["B","#61D6D6","high cyan"],["C","#E74856","high red"],["D","#B4009E","high magenta"],["E","#F9F1A5","yellow"],["F","#fff","white"] ];
+function colorBuild(){
+    const colorPalette = document.getElementById('colorPalette');colorPalette.innerHTML=""
+    for (const code in colorDict) {colorBuilder(colorPalette,code)}
+}
+function colorBuilder(colorPalette,code){
+    const colorName = colorDict[code][0]; const colorCode=colorDict[code][1];
+    const colorDiv = document.createElement('div');
+    colorDiv.classList.add('color');
+    colorDiv.style.backgroundColor = colorCode;
+    colorDiv.title = colorName;
+    colorDiv.setAttribute("tabindex","0");
+    colorDiv.addEventListener('click', function () {updateOutput(colorCode, colorName);});
+    colorPalette.appendChild(colorDiv);
+}
+elementsArray = document.querySelectorAll("#textInput");
+elementsArray.forEach( elem => {
+    elem.addEventListener("input", updateOutput);
+    elem.addEventListener("focus", (event) => { activey = document.activeElement});
+});
+function updateOutput(code, color) {
+    //console.log(code,color);
+    const textInput = activey;
+    textID = activey.className;
+    //console.log(textID);
+    fixtextID = textID.replace("background-","").replace("foreground-","");
+    const outputElement = document.getElementById(fixtextID+"output");
+    //outputElement.innerHTML = fixtextID;
+    if (textID.match("background")) {
+        textInput.value = color;
+        outputElement.style.backgroundColor = code;
+    } else if (textID.match("foreground")) {
+        outputElement.style.color = code;
+        outputElement.style.border = "none";
+        textInput.value = color;
+    }
+}
+function submit() {
+    elementsArray = document.querySelectorAll("#textInput");
+    billy = []
+    elementsArray.forEach( elem => { if (elem.value == "") {alert("Missing color");return;} else { billy.push(elem.value); } });
+    const textarea = document.getElementById("codeOutput");
+    const formattedArray = billy.join("");
+    textarea.innerHTML = "colors="+formattedArray;
+}
+function getSavedInput() { colorPlan = [];
+    let inputField = document.getElementById("savedInput");
+    let value = inputField.value;
+    let arr = value.split(/\r?\n/);
+    for (i in arr) {
+        if (i < 10) { colorPlan.push([i, arr[i]]);
+        } else if (i==10){colorPlan.push(["A", arr[i]]);
+        } else if (i==11){colorPlan.push(["B", arr[i]]);
+        } else if (i==12){colorPlan.push(["C", arr[i]]);
+        } else if (i==13){colorPlan.push(["D", arr[i]]);
+        } else if (i==14){colorPlan.push(["E", arr[i]]);
+        } else if (i==15){colorPlan.push(["F", arr[i]]);}
+    }
+    colorDict=colorPlan;colorBuild();
+}
+    </script>
+</body>
+</html>
