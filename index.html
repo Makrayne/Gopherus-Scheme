@@ -18,6 +18,7 @@
     <div id="colorPalette" style="text-align: center;"></div>
 <div class="row">
 <div class="column">
+<div style="text-align: center;margin: 3px auto;">Select an input box then a color box</div>
 <input type="text" id="textInput" class="normal-background-color" placeholder="normal-background-color"></input>
 <input type="text" id="textInput" class="normal-foreground-color" placeholder="normal-foreground-color"></input><lab id="normal-coloroutput">Normal text (text files or 'i' items)</lab><br>
 <input type="text" id="textInput" class="statI-background-color" placeholder="statI-background-color"></input>
@@ -41,7 +42,7 @@
 <pre id="codeOutput" style="user-select:all"></pre>
 </div>
 </div>
-<details style="text-align:center"><summary>Colors</summary>
+<details style="text-align:center"><summary>Terminal Colors</summary>
 <textarea type="text" id="savedInput" oninput="getSavedInput()" style="width:40vw;height:100px;" placeholder="Paste scheme here, one hex code per line. EX:
 #000
 #00A
@@ -84,13 +85,10 @@ elementsArray.forEach( elem => {
     elem.addEventListener("focus", (event) => { activey = document.activeElement});
 });
 function updateOutput(code, color) {
-    //console.log(code,color);
     const textInput = activey;
     textID = activey.className;
-    //console.log(textID);
     fixtextID = textID.replace("background-","").replace("foreground-","");
     const outputElement = document.getElementById(fixtextID+"output");
-    //outputElement.innerHTML = fixtextID;
     if (textID.match("background")) {
         textInput.value = color;
         outputElement.style.backgroundColor = code;
